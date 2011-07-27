@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pt_BR">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Looking Glass</title>
+	<style type='text/css'>
+	body {
+		font-family: sans-serif;
+		font-size: small;
+	}
+
+	.copyleft {
+		text-align: right;
+		text-size: x-small;
+	}
+
+	#result {
+		font-family: monospace;
+		margin: 10px;
+		padding: 10px;
+		background-color: #ffa;
+		display: none;
+	}
+	</style>
+</head>
+
+<body>
+
+<h1>Looking Glass</h1>
+
+<hr/>
+
+<form method="GET" id="form1" name='form1' onsubmit='return query();'>
+
+<select name='command'>
+	<option>show ip bgp</option>
+	<option disabled>ping</option>
+	<option disabled>traceroute</option>
+</select>
+
+<input type="text" name="dst" maxlength="50" size="30" />
+
+<input type="submit" name='submit' value="submit" />
+
+</form>
+
+<pre id="result"></pre>
+
+<hr/>
+
+<div class="copyleft">
+Copyleft 2011 <a href="https://github.com/mfdutra">Marlon Dutra</a>
+</div>
+
+<script type="text/javascript" src='jquery.js'></script>
+
+<script type="text/javascript">
+
+function query()
+{
+	var f = document.form1;
+	var data = {
+		command: f.command.value,
+		dst: f.dst.value
+	}
+
+	if (f.dst.value.match(/^[\d\.:]+$/))
+	{
+		$.getJSON('lg.cgi', data, result);
+
+		f.submit.value = 'wait...';
+		f.submit.disabled = true;
+	}
+	else
+	{
+		alert('Only IP addresses are accepted');
+	}
+
+	//
+	return false; // do not submit the form
+}
+
+function result(data, textStatus, jqXHR)
+{
+	$('#result').html(data.stdout);
+	$('#result').show();
+
+	var f = document.form1;
+	f.submit.value = 'submit';
+	f.submit.disabled = false;
+}
+
+</script>
+
+</body>
+</html>
